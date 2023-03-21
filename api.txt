@@ -1,0 +1,5 @@
+METHOD        URL Pattern         Handler Name            Description
+GET           /v1/healthcheck     healthcheckHandler      shows app info
+GET           /v1/courses         listCourseHandler       shows the details of all courses
+GET           /v1/courses/:id     showCourseHandler       shows detail of a specific course
+               
