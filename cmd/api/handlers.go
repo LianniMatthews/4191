@@ -13,7 +13,7 @@ import (
 func (app *application) createCourseHandler(w http.ResponseWriter, r *http.Request) {
 	//struct to hold course provided by request
 	var input struct {
-		Code   string `json:"course"`
+		Code   string `json:"code"`
 		Title  string `json:"title"`
 		Credit int64  `json:"credit"`
 	}
@@ -106,9 +106,9 @@ func (app *application) updateCourseHandler(w http.ResponseWriter, r *http.Reque
 
 	//course
 	var input struct {
-		Code   string `json:"course"`
-		Title  string `json:"title"`
-		Credit int64  `json:"credit"`
+		Code   *string `json:"code"`
+		Title  *string `json:"title"`
+		Credit *int64  `json:"credit"`
 	}
 
 	err = app.readJSON(w, r, &input)
@@ -118,10 +118,17 @@ func (app *application) updateCourseHandler(w http.ResponseWriter, r *http.Reque
 		return
 	}
 
-	//Update course info
-	course.Code = input.Code
-	course.Title = input.Title
-	course.Credit = input.Credit
+	//check for updates
+	if input.Code != nil {
+		course.Code = *input.Code
+	}
+	if input.Title != nil {
+		course.Title = *input.Title
+	}
+	if input.Code != nil {
+		course.Code = *input.Code
+	}
+	
 
 	//validate
 	v := validator.New()
@@ -134,7 +141,12 @@ func (app *application) updateCourseHandler(w http.ResponseWriter, r *http.Reque
 	//update
 	err = app.models.Courses.Update(course)
 	if err != nil {
-		app.serveErrorResponse(w, r, err)
+		switch {
+		case errors.Is(err, data.ErrEditConflict):
+			app.editConflictResponse(w, r)
+		default:
+			app.serveErrorResponse(w, r, err)
+		}
 		return
 	}
 

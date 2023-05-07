@@ -12,7 +12,7 @@ import (
 // course represents one row of data in database
 type Course struct {
 	ID        int64     `json:"id"`
-	Code      string    `json:"course"`
+	Code      string    `json:"code"`
 	Title     string    `json:"title"`
 	Credit    int64     `json:"credit"`
 	CreatedAt time.Time `json:"-"`
@@ -24,7 +24,7 @@ func ValidateCourse(v *validator.Validator, course *Course) {
 	v.Check(course.Code != "", "code", "must be provided")
 	v.Check(len(course.Code) <= 200, "name", "must not be more than 200 bytes long")
 
-	v.Check(course.Title != "", "tile", "must be provided")
+	v.Check(course.Title != "", "title", "must be provided")
 	v.Check(len(course.Title) <= 200, "level", "must not be more than 200 bytes long")
 
 	v.Check(course.Credit != 0, "credit", "must be greater than 0")
@@ -96,7 +96,8 @@ func (m CourseModel) Update(course *Course) error {
 			UPDATE courses
 			SET code = $1, title = $2, credit= $3, version = version + 1
 			RETURNING version
-			WHERE id = $9			
+			WHERE id = $4
+			AND version = $5		
 			RETURNING version
 	`
 	args := []interface{}{
@@ -107,7 +108,18 @@ func (m CourseModel) Update(course *Course) error {
 		course.Version,
 	}
 
-	return m.DB.QueryRow(query, args...).Scan(&course.Version)
+	//check for edit conflicts
+	err := m.DB.QueryRow(query, args...).Scan(&course.Version)
+
+	if err != nil {
+		switch {
+		case errors.Is(err, sql.ErrNoRows):
+			return ErrEditConflict
+		default:
+			return err
+		}
+	}
+	return nil
 }
 
 // Delete
