@@ -12,7 +12,7 @@ import (
 // course represents one row of data in database
 type Course struct {
 	ID        int64     `json:"id"`
-	Code      string    `json:"course"`
+	Code      string    `json:"code"`
 	Title     string    `json:"title"`
 	Credit    int64     `json:"credit"`
 	CreatedAt time.Time `json:"-"`
@@ -96,7 +96,7 @@ func (m CourseModel) Update(course *Course) error {
 			UPDATE courses
 			SET code = $1, title = $2, credit= $3, version = version + 1
 			RETURNING version
-			WHERE id = $9			
+			WHERE id = $4			
 			RETURNING version
 	`
 	args := []interface{}{

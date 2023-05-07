@@ -13,7 +13,7 @@ import (
 func (app *application) createCourseHandler(w http.ResponseWriter, r *http.Request) {
 	//struct to hold course provided by request
 	var input struct {
-		Code   string `json:"course"`
+		Code   string `json:"code"`
 		Title  string `json:"title"`
 		Credit int64  `json:"credit"`
 	}
@@ -106,7 +106,7 @@ func (app *application) updateCourseHandler(w http.ResponseWriter, r *http.Reque
 
 	//course
 	var input struct {
-		Code   string `json:"course"`
+		Code   string `json:"code"`
 		Title  string `json:"title"`
 		Credit int64  `json:"credit"`
 	}
