@@ -15,7 +15,7 @@ func (app *application) createCourseHandler(w http.ResponseWriter, r *http.Reque
 	var input struct {
 		Code   string `json:"code"`
 		Title  string `json:"title"`
-		Credit int64  `json:"credit"`
+		Credit string  `json:"credit"`
 	}
 	//decode JSON request
 	err := app.readJSON(w, r, &input)
@@ -108,7 +108,7 @@ func (app *application) updateCourseHandler(w http.ResponseWriter, r *http.Reque
 	var input struct {
 		Code   *string `json:"code"`
 		Title  *string `json:"title"`
-		Credit *int64  `json:"credit"`
+		Credit *string `json:"credit"`
 	}
 
 	err = app.readJSON(w, r, &input)
