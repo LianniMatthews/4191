@@ -14,7 +14,7 @@ type Course struct {
 	ID        int64     `json:"id"`
 	Code      string    `json:"code"`
 	Title     string    `json:"title"`
-	Credit    int64     `json:"credit"`
+	Credit    string     `json:"credit"`
 	CreatedAt time.Time `json:"-"`
 	Version   int32     `json:"version"`
 }
@@ -27,8 +27,8 @@ func ValidateCourse(v *validator.Validator, course *Course) {
 	v.Check(course.Title != "", "tile", "must be provided")
 	v.Check(len(course.Title) <= 200, "level", "must not be more than 200 bytes long")
 
-	v.Check(course.Credit != 0, "credit", "must be greater than 0")
-	v.Check(course.Credit < 5, "credit", "must be less than 5")
+	v.Check(course.Credit != "", "credit", "must be provided")
+	v.Check(len(course.Credit) <= 200, "level", "must not be more than 200 bytes long")
 }
 
 // Models
@@ -93,18 +93,16 @@ func (m CourseModel) Get(id int64) (*Course, error) {
 // Update ((AND version = $10))
 func (m CourseModel) Update(course *Course) error {
 	query := `
-			UPDATE courses
-			SET code = $1, title = $2, credit= $3, version = version + 1
-			RETURNING version
-			WHERE id = $4			
-			RETURNING version
+		UPDATE courses
+		SET code = $1, title = $2, credit = $3, version = version + 1
+		WHERE id = $4
+		RETURNING version
 	`
 	args := []interface{}{
 		course.Code,
 		course.Title,
 		course.Credit,
 		course.ID,
-		course.Version,
 	}
 
 	return m.DB.QueryRow(query, args...).Scan(&course.Version)
