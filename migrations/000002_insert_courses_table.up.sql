@@ -1,1 +1,1 @@
-copy courses FROM '/home/lmatthews/4191/quiz/migrations/course.csv' WITH delimiter ',' CSV HEADER;
+copy courses FROM '/home/lmatthews/courses.csv' WITH delimiter ',' CSV HEADER;

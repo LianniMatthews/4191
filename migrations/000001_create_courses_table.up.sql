@@ -1,5 +1,8 @@
 CREATE TABLE courses (
-    course_code text PRIMARY KEY,
-    course_title text NOT NULL,
-    course_credit int NOT NULL
+    id bigserial PRIMARY KEY,
+    created_at timestamp(0) with time zone NOT NULL DEFAULT NOW(),
+    code text NOT NULL,
+    title text NOT NULL,
+    credit int NOT NULL,
+    version integer NOT NULL DEFAULT 1
 );
